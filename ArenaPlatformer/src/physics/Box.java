@@ -1,11 +1,13 @@
 package physics;
 
+import java.awt.Graphics;
+
 public class Box {
 
-	private double xMin;
-	private double xMax;
-	private double yMin;
-	private double yMax;
+	protected double xMin;
+	protected double xMax;
+	protected double yMin;
+	protected double yMax;
 
 	public Box(double xMin, double xMax, double yMin, double yMax) {
 		this.xMin=xMin;
@@ -30,17 +32,14 @@ public class Box {
 	public int collidesX(Box other) {
 		
 		if( this.yMax>other.yMin && this.yMin<other.yMax) {
-			if( this.xMin < other.xMax) {
-				if(this.xMax>other.xMin) { return -1; }
-				else { return 0; }
-			}
-			else if(this.xMax > other.xMin) {
-				if(this.xMin<other.xMax) { return 1; }
+			if(this.xMax>other.xMin && this.xMin<other.xMax) {
+				if(this.xMin<other.xMin&&this.xMax<other.xMax) { return -1; }
+				else if(this.xMin>other.xMin&&this.xMax>other.xMax) { return +1; }
 				else { return 0; }
 			}
 			else { return 0; }
 		}
-		else return 0;
+		else { return 0; }
 	}
 	
 	/*
@@ -52,32 +51,17 @@ public class Box {
 	public int collidesY(Box other) {
 		
 		if( this.xMax>other.xMin && this.xMin<other.xMax) {
-			if( this.yMin < other.yMax) {
-				if(this.yMax>other.yMin) { return -1; }
-				else { return 0; }
-			}
-			else if(this.yMax > other.yMin) {
-				if(this.yMin<other.yMax) { return 1; }
+			if(this.yMax>other.yMin && this.yMin<other.yMax) {
+				if(this.yMin<other.yMin&&this.yMax<other.yMax) { return -1; }
+				else if(this.yMin>other.yMin&&this.yMax>other.yMax) { return +1; }
 				else { return 0; }
 			}
 			else { return 0; }
 		}
-		else return 0;
+		else { return 0; }
 	}
 	
-	public double getxMin() {
-		return xMin;
-	}
-
-	public double getxMax() {
-		return xMax;
-	}
-
-	public double getyMin() {
-		return yMin;
-	}
-
-	public double getyMax() {
-		return yMax;
+	public void paint(int offX, int offY, Graphics g) {
+		g.fillRect(offX+(int)+xMin, offY-(int)yMax, (int)(xMax-xMin), (int)(yMax-yMin));
 	}
 }
