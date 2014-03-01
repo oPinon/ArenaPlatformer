@@ -14,28 +14,55 @@ public class Box {
 		this.yMax=yMax;
 	}
 	
-	public BoxCollision collides(Box other){
-		
-		boolean ax = xMin < other.xMin;
-		boolean bx = xMin < other.xMax;
-		boolean cx = xMax < other.xMax;
-		boolean dx = xMax < other.xMin;
-		
-		boolean ay = yMin < other.yMin;
-		boolean by = yMin < other.yMax;
-		boolean cy = yMax < other.yMax;
-		boolean dy = yMax < other.yMin;
-		
-		if(dx||!bx||dy||!by) { return BoxCollision.out; }
-		if(by&&!dy) {
-			if(cx&&ax&&!dx) { return BoxCollision.left; }
-			if(bx&&!cx&&!ax) { return BoxCollision.right; }
+	public boolean collides(Box other) {
+		if(this.xMax>other.xMin && this.xMin<other.xMax) {
+			return (this.yMax>other.yMin && this.yMin<other.yMax);
 		}
-		if(bx&&!dx) {
-			if(cy&&ay&&!dy) { return BoxCollision.up; }
-			if(by&&!cy&&!ay) { return BoxCollision.down; }
-		}	
-		return BoxCollision.in;
+		else { return false; }
+	}
+	
+	/*
+	 * returns :
+	 * -1 if collides from left
+	 * 0 if doesn't collides
+	 * 1 if collides from right
+	 */
+	public int collidesX(Box other) {
+		
+		if( this.yMax>other.yMin && this.yMin<other.yMax) {
+			if( this.xMin < other.xMax) {
+				if(this.xMax>other.xMin) { return -1; }
+				else { return 0; }
+			}
+			else if(this.xMax > other.xMin) {
+				if(this.xMin<other.xMax) { return 1; }
+				else { return 0; }
+			}
+			else { return 0; }
+		}
+		else return 0;
+	}
+	
+	/*
+	 * returns :
+	 * -1 if collides from below
+	 * 0 if doesn't collides
+	 * 1 if collides from above
+	 */
+	public int collidesY(Box other) {
+		
+		if( this.xMax>other.xMin && this.xMin<other.xMax) {
+			if( this.yMin < other.yMax) {
+				if(this.yMax>other.yMin) { return -1; }
+				else { return 0; }
+			}
+			else if(this.yMax > other.yMin) {
+				if(this.yMin<other.yMax) { return 1; }
+				else { return 0; }
+			}
+			else { return 0; }
+		}
+		else return 0;
 	}
 	
 	public double getxMin() {
@@ -52,12 +79,5 @@ public class Box {
 
 	public double getyMax() {
 		return yMax;
-	}
-	
-	public void move(double x, double y) {
-		xMin += x;
-		xMax += x;
-		yMin += y;
-		yMax += y;
 	}
 }
