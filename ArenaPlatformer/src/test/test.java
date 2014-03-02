@@ -43,7 +43,7 @@ public class test extends JPanel implements ActionListener{
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		
-		Timer timer = new Timer(16,this);
+		Timer timer = new Timer(50,this);
 		timer.start();
 	}
 
@@ -56,7 +56,7 @@ public class test extends JPanel implements ActionListener{
 		arena.paint(camera.getXOffset(),camera.getYOffset(),g);
 		
 		g.setColor(Color.green);
-		player.paint(camera.getXOffset(),camera.getYOffset(), g);
+		player.paint(camera.getXOffset(),camera.getYOffset(), g, arena);
 		
 		g.setColor(Color.darkGray);
 		//g.drawString("x:"+arena.collidesX(player.feetBox).name(), width/2-13, height/2);
@@ -68,12 +68,12 @@ public class test extends JPanel implements ActionListener{
 	
 	public void actionPerformed(ActionEvent arg0) {
 		repaint();
-		if(player.pos.y<-500) { player = new Player(); camera.target = player.pos; }
+		if(player.pos.y<-500) { reset(); }
 		player.update(arena);
 		camera.update();
 	}
 	
-	public class Controller implements KeyListener {
+	private class Controller implements KeyListener {
 		
 		static final int step = 10;
 		
@@ -82,6 +82,7 @@ public class test extends JPanel implements ActionListener{
 			if(e.getKeyCode()==KeyEvent.VK_LEFT) { player.goLeft(); }
 			else if(e.getKeyCode()==KeyEvent.VK_RIGHT) { player.goRight(); }
 			else if(e.getKeyCode()==KeyEvent.VK_SPACE) { player.jump(); }
+			else if(e.getKeyCode()==KeyEvent.VK_DELETE) { reset(); }
 		}
 
 		@Override
@@ -96,6 +97,8 @@ public class test extends JPanel implements ActionListener{
 		}
 
 	}
+	
+	private void reset() { player = new Player(); camera.target = player.pos; }
 }
 
 

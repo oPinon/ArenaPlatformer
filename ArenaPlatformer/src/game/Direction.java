@@ -1,5 +1,5 @@
 package game;
 
-public enum PlayerDirection {
+public enum Direction {
 	LEFT, RIGHT, NO;
 }

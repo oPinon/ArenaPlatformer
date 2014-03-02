@@ -42,11 +42,11 @@ public class Box {
 		
 		if( this.xMax>other.xMin && this.xMin<other.xMax) {
 			if(this.yMax>other.yMin && this.yMin<other.yMax) {
-				if(this.yMin<other.yMin&&this.yMax<other.yMax) { return BoxCollision.DOWN; }
+				if(this.yMin<other.yMin&&this.yMax<other.yMax) { return BoxCollision.BELOW; }
 				else if(this.yMin>other.yMin&&this.yMax>other.yMax) { return BoxCollision.ABOVE; }
 				else { return BoxCollision.IN; }
 			}
-			else { return BoxCollision.IN; }
+			else { return BoxCollision.OUT; }
 		}
 		else { return BoxCollision.OUT; }
 	}

@@ -51,7 +51,7 @@ public class Arena {
 	
 	public BoxCollision collidesY(Box box) {
 		for(Box b: colMap) {
-			BoxCollision col = box.collidesY(b);
+			BoxCollision col = b.collidesY(box);
 			if(col!=BoxCollision.OUT) { return col; }
 		}
 		return BoxCollision.OUT;
