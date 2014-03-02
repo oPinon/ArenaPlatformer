@@ -25,6 +25,7 @@ public class test extends JPanel implements ActionListener{
 	private Player player;
 	private Arena arena;
 	private Camera camera;
+	private Timer timer;
 	
 	public test(int width, int height) {
 		
@@ -43,7 +44,7 @@ public class test extends JPanel implements ActionListener{
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		
-		Timer timer = new Timer(50,this);
+		timer = new Timer(50,this);
 		timer.start();
 	}
 
@@ -83,6 +84,7 @@ public class test extends JPanel implements ActionListener{
 			else if(e.getKeyCode()==KeyEvent.VK_RIGHT) { player.goRight(); }
 			else if(e.getKeyCode()==KeyEvent.VK_SPACE) { player.jump(); }
 			else if(e.getKeyCode()==KeyEvent.VK_DELETE) { reset(); }
+			else if(e.getKeyCode()==KeyEvent.VK_CONTROL) { if(timer.isRunning()){timer.stop();} else {timer.start();}  }
 		}
 
 		@Override
