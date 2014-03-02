@@ -10,6 +10,8 @@ public class Box {
 	protected double yMax;
 
 	public Box(double xMin, double xMax, double yMin, double yMax) {
+		if(xMax<xMin){ double temp=xMax; xMax=xMin; xMin=temp; }
+		if(yMax<yMin){ double temp=yMax; yMax=yMin; yMin=temp; }
 		this.xMin=xMin;
 		this.xMax=xMax;
 		this.yMin=yMin;
@@ -23,42 +25,30 @@ public class Box {
 		else { return false; }
 	}
 	
-	/*
-	 * returns :
-	 * -1 if collides from left
-	 * 0 if doesn't collides
-	 * 1 if collides from right
-	 */
-	public int collidesX(Box other) {
+	public BoxCollision collidesX(Box other) {
 		
 		if( this.yMax>other.yMin && this.yMin<other.yMax) {
 			if(this.xMax>other.xMin && this.xMin<other.xMax) {
-				if(this.xMin<other.xMin&&this.xMax<other.xMax) { return -1; }
-				else if(this.xMin>other.xMin&&this.xMax>other.xMax) { return +1; }
-				else { return 0; }
+				if(this.xMin<other.xMin&&this.xMax<other.xMax) { return BoxCollision.LEFT; }
+				else if(this.xMin>other.xMin&&this.xMax>other.xMax) { return BoxCollision.RIGHT; }
+				else { return BoxCollision.IN; }
 			}
-			else { return 0; }
+			else { return BoxCollision.OUT; }
 		}
-		else { return 0; }
+		else { return BoxCollision.OUT; }
 	}
 	
-	/*
-	 * returns :
-	 * -1 if collides from below
-	 * 0 if doesn't collides
-	 * 1 if collides from above
-	 */
-	public int collidesY(Box other) {
+	public BoxCollision collidesY(Box other) {
 		
 		if( this.xMax>other.xMin && this.xMin<other.xMax) {
 			if(this.yMax>other.yMin && this.yMin<other.yMax) {
-				if(this.yMin<other.yMin&&this.yMax<other.yMax) { return -1; }
-				else if(this.yMin>other.yMin&&this.yMax>other.yMax) { return +1; }
-				else { return 0; }
+				if(this.yMin<other.yMin&&this.yMax<other.yMax) { return BoxCollision.DOWN; }
+				else if(this.yMin>other.yMin&&this.yMax>other.yMax) { return BoxCollision.ABOVE; }
+				else { return BoxCollision.IN; }
 			}
-			else { return 0; }
+			else { return BoxCollision.IN; }
 		}
-		else { return 0; }
+		else { return BoxCollision.OUT; }
 	}
 	
 	public void paint(int offX, int offY, Graphics g) {

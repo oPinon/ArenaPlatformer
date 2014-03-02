@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 import physics.Box;
+import physics.BoxCollision;
 
 public class Arena {
 
@@ -18,24 +19,42 @@ public class Arena {
 		
 		colMap.add(new Box(-2*h,2*h,0,e));
 		
-		colMap.add(new Box(2*h,3*h,-v,-v+e));
-		colMap.add(new Box(-3*h,-2*h,-v,-v+e));
+		colMap.add(new Box(2*h,4*h,-v,-v+e));
+		colMap.add(new Box(-4*h,-2*h,-v,-v+e));
+		
+		colMap.add(new Box(5*h,6*h,-v,-v+e));
+		colMap.add(new Box(-6*h,-5*h,-v,-v+e));
+		
+		colMap.add(new Box(2*h-e,2*h,2*v,6*v));
+		colMap.add(new Box(-2*h,-2*h+e,2*v,6*v));
+		
+		colMap.add(new Box(h/2,2*h,6*v,6*v+e));
+		colMap.add(new Box(-2*h,-h/2,6*v,6*v+e));
+		
+		colMap.add(new Box(3*h,3*h+e,1*v,3*v));
+		colMap.add(new Box(-3*h-e,-3*h,1*v,3*v));
+		
+		colMap.add(new Box(3*h,4*h,3*v,3*v+e));
+		colMap.add(new Box(-4*h,-3*h,3*v,3*v+e));
+		
+		colMap.add(new Box(3*h,3*h+e,5*v,8*v));
+		colMap.add(new Box(-3*h-e,-3*h,5*v,8*v));
 	}
 	
-	public int collidesX(Box box) {
+	public BoxCollision collidesX(Box box) {
 		for(Box b: colMap) {
-			int col = box.collidesX(b);
-			if(col!=0) { return col; }
+			BoxCollision col = box.collidesX(b);
+			if(col!=BoxCollision.OUT) { return col; }
 		}
-		return 0;
+		return BoxCollision.OUT;
 	}
 	
-	public int collidesY(Box box) {
+	public BoxCollision collidesY(Box box) {
 		for(Box b: colMap) {
-			int col = box.collidesY(b);
-			if(col!=0) { return col; }
+			BoxCollision col = box.collidesY(b);
+			if(col!=BoxCollision.OUT) { return col; }
 		}
-		return 0;
+		return BoxCollision.OUT;
 	}
 	
 	public void paint(int offX, int offY, Graphics g) {

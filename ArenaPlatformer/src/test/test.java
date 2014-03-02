@@ -22,18 +22,15 @@ public class test extends JPanel implements ActionListener{
 	}
 
 	private int width, height;
-	private Position pos;
+	private Player player;
 	private Arena arena;
 	private Camera camera;
-	private HitBox hitBox;
-	private int dx, dy;
 	
 	public test(int width, int height) {
 		
 		arena = new Arena();
-		pos = new Position(); pos.x = 0; pos.y = 0;
-		camera = new Camera(pos,width,height);
-		hitBox = new HitBox(pos,-15,15,-15,15);
+		player = new Player();
+		camera = new Camera(player.pos,width,height);
 		
 		this.width=width; this.height=height;
 		JFrame frame = new JFrame();
@@ -59,11 +56,11 @@ public class test extends JPanel implements ActionListener{
 		arena.paint(camera.getXOffset(),camera.getYOffset(),g);
 		
 		g.setColor(Color.green);
-		hitBox.paint(camera.getXOffset(),camera.getYOffset(), g);
+		player.paint(camera.getXOffset(),camera.getYOffset(), g);
 		
 		g.setColor(Color.darkGray);
-		g.drawString(("x = "+arena.collidesX(hitBox)), width/2-13, height/2);
-		g.drawString(("y = "+arena.collidesY(hitBox)), width/2-13, height/2+10);
+		//g.drawString("x:"+arena.collidesX(player.feetBox).name(), width/2-13, height/2);
+		//g.drawString("y:"+arena.collidesY(player.feetBox).name(), width/2-13, height/2+10);
 		
 		Toolkit.getDefaultToolkit().sync();
         g.dispose();
@@ -71,29 +68,26 @@ public class test extends JPanel implements ActionListener{
 	
 	public void actionPerformed(ActionEvent arg0) {
 		repaint();
-		pos.x += dx;
-		pos.y += dy;
-		hitBox.update();
+		if(player.pos.y<-500) { player = new Player(); camera.target = player.pos; }
+		player.update(arena);
+		camera.update();
 	}
 	
 	public class Controller implements KeyListener {
 		
-		static final int step = 3;
+		static final int step = 10;
 		
 		@Override
 		public void keyPressed(KeyEvent e) {
-			if(e.getKeyCode()==KeyEvent.VK_LEFT) { dx=-step; }
-			else if(e.getKeyCode()==KeyEvent.VK_RIGHT) { dx=step; }
-			else if(e.getKeyCode()==KeyEvent.VK_UP) { dy=step; }
-			else if(e.getKeyCode()==KeyEvent.VK_DOWN) { dy=-step; }
+			if(e.getKeyCode()==KeyEvent.VK_LEFT) { player.goLeft(); }
+			else if(e.getKeyCode()==KeyEvent.VK_RIGHT) { player.goRight(); }
+			else if(e.getKeyCode()==KeyEvent.VK_SPACE) { player.jump(); }
 		}
 
 		@Override
 		public void keyReleased(KeyEvent e) {
-			if(e.getKeyCode()==KeyEvent.VK_LEFT) { if(dx==-step) dx=0; }
-			else if(e.getKeyCode()==KeyEvent.VK_RIGHT) {  if(dx==step) dx=0; }
-			else if(e.getKeyCode()==KeyEvent.VK_UP) {  if(dy==step) dy=0; }
-			else if(e.getKeyCode()==KeyEvent.VK_DOWN) {  if(dy==-step) dy=0; }
+			if(e.getKeyCode()==KeyEvent.VK_LEFT) { player.stopLeft(); }
+			else if(e.getKeyCode()==KeyEvent.VK_RIGHT) {  player.stopRight(); }
 		}
 
 		@Override
