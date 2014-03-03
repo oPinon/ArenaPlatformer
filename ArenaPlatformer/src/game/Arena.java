@@ -10,12 +10,12 @@ public class Arena {
 
 	private ArrayList<Box> colMap;
 	
+	static int e = 30; // boxes thickness
+	static int v = 150; // vertical jump's height
+	static int h = 200; // horizontal jump's length
+	
 	public Arena() {
 		colMap = new ArrayList<Box>();
-		
-		int e = 30; // boxes thickness
-		int v = 100; // vertical jump's height
-		int h = 150; // horizontal jump's length
 		
 		colMap.add(new Box(-2*h,2*h,0,e));
 		

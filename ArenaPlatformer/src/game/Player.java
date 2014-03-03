@@ -17,16 +17,17 @@ public class Player {
 	private PlayerState state;
 	private Direction movDirection, spriteDirection;
 	private double dx, dy;
-	private double verticalDamping = 0.99,  horizontalDamping = 0.8, airControl = 1, wallFriction = 0.8;
+	private double airControl = 0.02, groundFriction = 0.05, airFriction = 0.01, wallFriction = 0.8;
 	static double gravity = -1;
-	private double jumpForce = 20, runForce = 3, wallJumpXForce = 20, wallJumpYForce = 20;
-	static double threshold = 1; // to avoid divergence
-
+	private double jumpForce = 20, runSpeed = 10, wallJumpXForce = 10, wallJumpYForce = 20;
+	
+	static double threshold = 0; // to avoid divergence
+	static int maxSpeed = Arena.e;
 
 	public Player() {
 		this.pos = new Position(0,200);
-		this.feetBox = new HitBox(pos,-15,15,0,20);
-		this.hitBox = new HitBox(pos,-20,20,50,100);
+		this.feetBox = new HitBox(pos,-15,15,0,30);
+		this.hitBox = new HitBox(pos,-20,20,30,100);
 		this.state = PlayerState.WAIT;
 		this.movDirection = Direction.NO;
 		this.spriteDirection = Direction.RIGHT;
@@ -43,40 +44,41 @@ public class Player {
 			if(!tryMoving(arena)) { break; };
 			if(movDirection!=Direction.NO) { state = PlayerState.RUN; break;}
 			if( Math.abs(dx)< threshold ) { dx=0; }
-			moveX();
+			//moveXGround();
 			break;
 		}
 		case RUN : {
 			if(tryFalling(arena)) { break; };
-			controlSpeedOnGround();
-			if( movDirection==Direction.NO && Math.abs(dx)< threshold ) { state = PlayerState.WAIT; dx=0; break; }
+			if( movDirection==Direction.LEFT ) { dx=-runSpeed; }
+			else if( movDirection==Direction.RIGHT ) { dx=+runSpeed; }
+			else if( movDirection==Direction.NO ) { state = PlayerState.WAIT; dx=0; break; }
 			if(!tryMoving(arena)) { break; };
-			moveX();
+			moveXGround();
 			break;
 		}
 		case JUMP : {
 			if(!tryGoingUp(arena)) { state = PlayerState.FALL; break; }
 			if(tryWalling(arena)) { break; }
 			if(dy<=0) { state = PlayerState.FALL; }
-			controlSpeedOnAir();
+
 			dy += gravity;
-			moveX(); moveY();
+			moveXAir(); moveYAir();
 			break;
 		}
 		case ONWALL : {
 			if(tryLanding(arena)) { break; };
 			if(tryFallingFromWall(arena)) { state = PlayerState.FALL; break; }
 			tryGoingUp(arena);
-			dy += gravity*wallFriction;
-			moveY();
+			dy += gravity;
+			moveYWall();
 			break;
 		}
 		case FALL : {
 			if(tryLanding(arena)) { break; };
 			if(tryWalling(arena)) { break; }
-			controlSpeedOnAir();
+
 			dy += gravity;
-			moveX(); moveY();
+			moveXAir(); moveYAir();
 			break;
 		}
 		case PUNCH : {
@@ -95,17 +97,7 @@ public class Player {
 		}
 		else { return false; }
 	}
-
-	private boolean tryFallingFromWall(Arena arena) {
-		if(movDirection==Direction.NO) {
-			if(arena.collidesX(hitBox)==BoxCollision.OUT) { return true; }
-			else { return false; }
-		}
-		else if(movDirection==Direction.LEFT&&!(arena.collidesX(hitBox)==BoxCollision.RIGHT)) { return true; }
-		else if(movDirection==Direction.RIGHT&&!(arena.collidesX(hitBox)==BoxCollision.LEFT)) { return true; }
-		else { return false; }
-	}
-
+	
 	private boolean tryWalling(Arena arena) {
 		if(arena.collidesX(hitBox)==BoxCollision.RIGHT&&(dx<0)) {
 			spriteDirection=Direction.LEFT;
@@ -121,17 +113,25 @@ public class Player {
 		}
 		else { return  false; }
 	}
-
-	private void controlSpeedOnAir() {
-		if(movDirection==Direction.RIGHT) { dx += runForce*airControl; }
-		else if(movDirection==Direction.LEFT) { dx -= runForce*airControl; }
+	
+	private boolean tryFalling(Arena arena) {
+		if(arena.collidesY(feetBox)!=BoxCollision.BELOW) { // is the arena not below the player's feet ?
+			state = PlayerState.FALL;
+			return true;
+		}
+		else { return false; }
 	}
 
-	private void controlSpeedOnGround() {
-		if(movDirection==Direction.RIGHT) { dx += runForce; }
-		else if(movDirection==Direction.LEFT) { dx -= runForce; }
+	private boolean tryFallingFromWall(Arena arena) {
+		if(movDirection==Direction.NO) {
+			if(arena.collidesX(hitBox)==BoxCollision.OUT) { return true; }
+			else { return false; }
+		}
+		else if(movDirection==Direction.LEFT&&!(arena.collidesX(hitBox)==BoxCollision.RIGHT)) { return true; }
+		else if(movDirection==Direction.RIGHT&&!(arena.collidesX(hitBox)==BoxCollision.LEFT)) { return true; }
+		else { return false; }
 	}
-
+	
 	private boolean tryMoving(Arena arena) {
 		if(dx>0) {
 			if(arena.collidesX(hitBox)==BoxCollision.LEFT) {
@@ -148,14 +148,6 @@ public class Player {
 		return true;
 	}
 
-	private boolean tryFalling(Arena arena) {
-		if(arena.collidesY(feetBox)!=BoxCollision.BELOW) { // is the arena not below the player's feet ?
-			state = PlayerState.FALL;
-			return true;
-		}
-		else { return false; }
-	}
-
 	private boolean tryGoingUp(Arena arena) {
 		if(arena.collidesY(hitBox)==BoxCollision.ABOVE) {
 			if(dy>0) { dy=0; }
@@ -163,14 +155,20 @@ public class Player {
 		}
 		else { return true; }
 	}
-
-	private void moveX() {
-		dx *= horizontalDamping;
+	
+	private void moveXGround() {
+		pos.x += dx;
+	}
+	
+	private void moveXAir() {
 		pos.x += dx;
 	}
 
-	private void moveY() {
-		dy *= verticalDamping;
+	private void moveYAir() {
+		pos.y += dy;
+	}
+	
+	private void moveYWall() {
 		pos.y += dy;
 	}
 
@@ -183,13 +181,11 @@ public class Player {
 			dy=0;
 			if(spriteDirection==Direction.RIGHT) { // jumps on the opposite direction of the wall
 				dx = -wallJumpXForce;
-				dy += wallJumpYForce;
-				//if(movDirection==Direction.RIGHT) { movDirection=Direction.NO; } to avoid infinite wallJump
+				dy = wallJumpYForce;
 			}
 			else if(spriteDirection==Direction.LEFT) {
 				dx = wallJumpXForce;
-				dy += wallJumpYForce;
-				//if(movDirection==Direction.LEFT) { movDirection=Direction.NO; }
+				dy = wallJumpYForce;
 			}
 			state = PlayerState.JUMP;
 		}

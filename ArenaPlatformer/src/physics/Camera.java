@@ -2,7 +2,7 @@ package physics;
 
 public class Camera {
 
-	static double inertia = 1;
+	static double inertia = 10;
 	
 	public Position target, pos;
 	private int width, height;

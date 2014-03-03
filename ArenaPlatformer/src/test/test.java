@@ -44,7 +44,7 @@ public class test extends JPanel implements ActionListener{
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		
-		timer = new Timer(50,this);
+		timer = new Timer(16,this);
 		timer.start();
 	}
 
@@ -76,7 +76,6 @@ public class test extends JPanel implements ActionListener{
 	
 	private class Controller implements KeyListener {
 		
-		static final int step = 10;
 		
 		@Override
 		public void keyPressed(KeyEvent e) {
