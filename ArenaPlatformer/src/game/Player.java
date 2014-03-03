@@ -17,11 +17,10 @@ public class Player {
 	private PlayerState state;
 	private Direction movDirection, spriteDirection;
 	private double dx, dy;
-	private double airControl = 0.02, groundFriction = 0.05, airFriction = 0.01, wallFriction = 0.8;
 	static double gravity = -1;
-	private double jumpForce = 20, runSpeed = 10, wallJumpXForce = 10, wallJumpYForce = 20;
+	private double jumpForce = 20, runSpeed = 10, airControl = 0.1, wallJumpXForce = 10, wallJumpYForce = 20;
+	private int brakeFrames = 10;
 	
-	static double threshold = 0; // to avoid divergence
 	static int maxSpeed = Arena.e;
 
 	public Player() {
@@ -43,15 +42,15 @@ public class Player {
 			if(tryFalling(arena)) { break; };
 			if(!tryMoving(arena)) { break; };
 			if(movDirection!=Direction.NO) { state = PlayerState.RUN; break;}
-			if( Math.abs(dx)< threshold ) { dx=0; }
-			//moveXGround();
+			brake();
+			moveXGround();
 			break;
 		}
 		case RUN : {
 			if(tryFalling(arena)) { break; };
 			if( movDirection==Direction.LEFT ) { dx=-runSpeed; }
 			else if( movDirection==Direction.RIGHT ) { dx=+runSpeed; }
-			else if( movDirection==Direction.NO ) { state = PlayerState.WAIT; dx=0; break; }
+			else if( movDirection==Direction.NO ) { state = PlayerState.WAIT; break; }
 			if(!tryMoving(arena)) { break; };
 			moveXGround();
 			break;
@@ -60,7 +59,7 @@ public class Player {
 			if(!tryGoingUp(arena)) { state = PlayerState.FALL; break; }
 			if(tryWalling(arena)) { break; }
 			if(dy<=0) { state = PlayerState.FALL; }
-
+			airControl();
 			dy += gravity;
 			moveXAir(); moveYAir();
 			break;
@@ -76,7 +75,7 @@ public class Player {
 		case FALL : {
 			if(tryLanding(arena)) { break; };
 			if(tryWalling(arena)) { break; }
-
+			airControl();
 			dy += gravity;
 			moveXAir(); moveYAir();
 			break;
@@ -147,6 +146,17 @@ public class Player {
 		}
 		return true;
 	}
+	
+	private void airControl() {
+		if( movDirection==Direction.LEFT ) { dx-=runSpeed*airControl; }
+		else if( movDirection==Direction.RIGHT ) { dx+=runSpeed*airControl; }
+		dx = Math.max(-runSpeed, Math.min(dx,+runSpeed));
+	}
+	
+	private void brake() {
+		if(dx>0) { dx = Math.max(0, dx - runSpeed/brakeFrames); }
+		else if (dx<0) { dx = Math.min(0, dx + runSpeed/brakeFrames); }
+	}
 
 	private boolean tryGoingUp(Arena arena) {
 		if(arena.collidesY(hitBox)==BoxCollision.ABOVE) {
@@ -161,14 +171,17 @@ public class Player {
 	}
 	
 	private void moveXAir() {
+		if(Math.abs(dx)>maxSpeed) { dx = Math.signum(dx)*maxSpeed; }
 		pos.x += dx;
 	}
 
 	private void moveYAir() {
+		if(Math.abs(dy)>maxSpeed) { dy = Math.signum(dy)*maxSpeed; }
 		pos.y += dy;
 	}
 	
 	private void moveYWall() {
+		if(Math.abs(dy)>maxSpeed) { dy = Math.signum(dy)*maxSpeed; }
 		pos.y += dy;
 	}
 
@@ -182,10 +195,12 @@ public class Player {
 			if(spriteDirection==Direction.RIGHT) { // jumps on the opposite direction of the wall
 				dx = -wallJumpXForce;
 				dy = wallJumpYForce;
+				if(movDirection==Direction.RIGHT) { movDirection = Direction.NO; }
 			}
 			else if(spriteDirection==Direction.LEFT) {
 				dx = wallJumpXForce;
 				dy = wallJumpYForce;
+				if(movDirection==Direction.LEFT) { movDirection = Direction.NO; }
 			}
 			state = PlayerState.JUMP;
 		}

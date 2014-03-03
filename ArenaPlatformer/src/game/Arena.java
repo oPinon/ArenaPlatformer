@@ -11,7 +11,7 @@ public class Arena {
 	private ArrayList<Box> colMap;
 	
 	static int e = 30; // boxes thickness
-	static int v = 150; // vertical jump's height
+	static int v = 110; // vertical jump's height
 	static int h = 200; // horizontal jump's length
 	
 	public Arena() {
