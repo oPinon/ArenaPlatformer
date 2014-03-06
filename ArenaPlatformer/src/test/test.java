@@ -51,10 +51,10 @@ public class test extends JPanel implements ActionListener{
 
 	public void paint(Graphics g) {
 
-		g.setColor(Color.black);
+		g.setColor(Color.lightGray);
 		g.fillRect(0, 0, width, height);
 		
-		g.setColor(Color.white);
+		g.setColor(Color.black);
 		arena.paint(camera.getXOffset(),camera.getYOffset(),g);
 		
 		g.setColor(Color.green);

@@ -21,6 +21,8 @@ public class Player {
 	private double jumpForce = 20, runSpeed = 15, airControl = 0.05, wallJumpXForce = 10, wallJumpYForce = jumpForce;
 	private int groundStartInertia = 10, groundStopInertia = 40;
 	
+	private Animation wait;
+	
 	static int maxSpeed = Arena.e;
 
 	public Player() {
@@ -31,6 +33,8 @@ public class Player {
 		this.movDirection = Direction.NO;
 		this.spriteDirection = Direction.RIGHT;
 		this.dx = 0; this.dx = 0;
+		
+		wait = new Animation("testChar","run",null,2);
 	}
 
 	public void update(Arena arena) {
@@ -227,11 +231,15 @@ public class Player {
 	}
 
 	public void paint(int offX, int offY, Graphics g, Arena arena){
-		g.setColor(Color.cyan);
+		/*g.setColor(Color.cyan);
 		hitBox.paint(offX, offY, g);
 		g.setColor(Color.green);
-		feetBox.paint(offX, offY, g);
-		g.setColor(Color.lightGray);
+		feetBox.paint(offX, offY, g);*/
+		
+		g.drawImage(wait.getSprite(),offX+pos.x-wait.getXOffset(),offY-pos.y-wait.getYOffset(),null);
+		wait = wait.update();
+		
+		g.setColor(Color.white);
 		g.drawString("(state) "+state.name(), 10, 20);
 		g.drawString("(movDir) "+movDirection.name(), 10, 40);
 		g.drawString("(spritDir) "+spriteDirection.name(), 10, 60);
