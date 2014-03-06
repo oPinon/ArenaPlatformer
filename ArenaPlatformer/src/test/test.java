@@ -37,6 +37,7 @@ public class test extends JPanel implements ActionListener{
 		JFrame frame = new JFrame();
 		frame.add(this);
 		Controller controller = new Controller();
+		frame.setTitle("Arena Platformer by OPinon");
 		frame.addKeyListener(controller);
 		frame.setSize(width, height);
 		frame.setLocationRelativeTo(null);
