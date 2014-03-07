@@ -236,7 +236,7 @@ public class Player {
 		g.setColor(Color.green);
 		feetBox.paint(offX, offY, g);*/
 		
-		g.drawImage(wait.getSprite(),offX+pos.x-wait.getXOffset(),offY-pos.y-wait.getYOffset(),null);
+		g.drawImage(wait.getSprite(spriteDirection),offX+pos.x-wait.getXOffset(),offY-pos.y-wait.getYOffset(),null);
 		wait = wait.update();
 		
 		g.setColor(Color.white);
