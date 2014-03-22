@@ -9,7 +9,7 @@ import javax.imageio.ImageIO;
 
 public class Animation {
 
-	private String character, animationName;
+	public String character, animationName;
 	private Animation nextAnimation;
 	private int frameDelay;
 	private ArrayList<BufferedImage> spritesLeft, spritesRight;
@@ -42,6 +42,10 @@ public class Animation {
 		}
 
 		if(spritesLeft.get(0)!=null) {xOffset=spritesLeft.get(0).getWidth()/2; yOffset=spritesLeft.get(0).getHeight()-10;} // WARNING : shall be changed for a reading in the character's properties
+	}
+	
+	public void setNextAnimation(Animation nextAnimation) {
+		this.nextAnimation = nextAnimation;
 	}
 
 	public int getXOffset() { return xOffset; }

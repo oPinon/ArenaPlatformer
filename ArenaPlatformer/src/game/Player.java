@@ -20,8 +20,9 @@ public class Player {
 	private double gravity = -1;
 	private double jumpForce = 20, runSpeed = 15, airControl = 0.05, wallJumpXForce = 10, wallJumpYForce = jumpForce;
 	private int groundStartInertia = 10, groundStopInertia = 40;
+	private int animationFramePerFrame = 2;
 	
-	private Animation wait;
+	private Animation currentAnimation, brake, fall, fallStart, jump, jumpStart, punch, run, startRun, wait, wall, wallJump, wallStart;
 	
 	static int maxSpeed = Arena.e;
 
@@ -34,7 +35,20 @@ public class Player {
 		this.spriteDirection = Direction.RIGHT;
 		this.dx = 0; this.dx = 0;
 		
-		wait = new Animation("testChar","run",null,2);
+		wait = new Animation("testChar","wait",null,animationFramePerFrame);
+		brake = new Animation("testChar","brake",wait,animationFramePerFrame);
+		fall = new Animation("testChar","fall",null,animationFramePerFrame);
+		fallStart = new Animation("testChar","fallStart",fall,animationFramePerFrame);
+		jump = new Animation("testChar","jump",null,animationFramePerFrame);
+		jumpStart = new Animation("testChar","jumpStart",jump,animationFramePerFrame);
+		//punch = new Animation("testChar","punch",wait,animationFramePerFrame);
+		run = new Animation("testChar","run",null,animationFramePerFrame);
+		startRun = new Animation("testChar","startRun",run,animationFramePerFrame);
+		wall = new Animation("testChar","wall",null,animationFramePerFrame);
+		wallJump = new Animation("testChar","wallJump",jump,animationFramePerFrame);
+		wallStart = new Animation("testChar","wallStart",wall,animationFramePerFrame);
+		
+		setAnimation(fall);
 	}
 
 	public void update(Arena arena) {
@@ -43,7 +57,7 @@ public class Player {
 
 		switch(state){
 		case WAIT : {
-			if(tryFalling(arena)) { update(arena); break; };
+			if(tryFalling(arena)) { setAnimation(fallStart); update(arena); break; };
 			if(!tryMoving(arena)) { break; };
 			if(movDirection!=Direction.NO) { state = PlayerState.RUN; update(arena); break;}
 			brake();
@@ -51,17 +65,19 @@ public class Player {
 			break;
 		}
 		case RUN : {
-			if(tryFalling(arena)) { update(arena); break; };
-			if( movDirection==Direction.NO ) { state = PlayerState.WAIT; update(arena); break; }
+			if(tryFalling(arena)) { setAnimation(fallStart); update(arena); break; };
+			if( movDirection==Direction.NO ) { setAnimation(brake); state = PlayerState.WAIT; update(arena); break; }
 			accelerate();
+			if(dx>0) { spriteDirection=Direction.RIGHT;} else { spriteDirection=Direction.LEFT;}
+			if(currentAnimation!=run&&currentAnimation!=startRun){ setAnimation(startRun);}
 			if(!tryMoving(arena)) {break; };
 			moveXGround();
 			break;
 		}
 		case JUMP : {
 			if(!tryGoingUp(arena)) { state = PlayerState.FALL; update(arena); break; }
-			if(tryWalling(arena)) { update(arena); break; }
-			if(dy<=0) { state = PlayerState.FALL; }
+			if(tryWalling(arena)) { setAnimation(wallStart); update(arena); break; }
+			if(dy<=0) { state = PlayerState.FALL; setAnimation(fallStart); update(arena); break;}
 			airControl();
 			dy += gravity;
 			moveXAir(); moveYAir();
@@ -69,15 +85,15 @@ public class Player {
 		}
 		case ONWALL : {
 			if(tryLanding(arena)) { update(arena); break; };
-			if(tryFallingFromWall(arena)) { state = PlayerState.FALL; update(arena); break; }
+			if(tryFallingFromWall(arena)) { setAnimation(fallStart); state = PlayerState.FALL; update(arena); break; }
 			tryGoingUp(arena);
 			dy += gravity;
 			moveYWall();
 			break;
 		}
 		case FALL : {
-			if(tryLanding(arena)) { update(arena); break; };
-			if(tryWalling(arena)) { update(arena); break; }
+			if(tryLanding(arena)) { setAnimation(wait); update(arena); break; };
+			if(tryWalling(arena)) { setAnimation(wallStart); update(arena); break; }
 			airControl();
 			dy += gravity;
 			moveXAir(); moveYAir();
@@ -102,13 +118,13 @@ public class Player {
 	
 	private boolean tryWalling(Arena arena) {
 		if(arena.collidesX(hitBox)==BoxCollision.RIGHT&&(dx<0)) {
-			spriteDirection=Direction.LEFT;
+			spriteDirection=Direction.RIGHT;
 			state = PlayerState.ONWALL;
 			dx=0;
 			return true;
 		}
 		else if(arena.collidesX(hitBox)==BoxCollision.LEFT&&(dx>0)) {
-			spriteDirection=Direction.RIGHT;
+			spriteDirection=Direction.LEFT;
 			state = PlayerState.ONWALL;
 			dx=0;
 			return true;
@@ -197,20 +213,22 @@ public class Player {
 		if(state==PlayerState.WAIT||state==PlayerState.RUN) { // if on the ground
 			dy = jumpForce;
 			state = PlayerState.JUMP;
+			setAnimation(jumpStart);
 		}
 		if(state==PlayerState.ONWALL) { // if on wall
 			dy=0;
-			if(spriteDirection==Direction.RIGHT) { // jumps on the opposite direction of the wall
+			if(spriteDirection==Direction.LEFT) { // jumps on the opposite direction of the wall
 				dx = -wallJumpXForce;
 				dy = wallJumpYForce;
 				if(movDirection==Direction.RIGHT) { movDirection = Direction.NO; }
 			}
-			else if(spriteDirection==Direction.LEFT) {
+			else if(spriteDirection==Direction.RIGHT) {
 				dx = wallJumpXForce;
 				dy = wallJumpYForce;
-				if(movDirection==Direction.LEFT) { movDirection = Direction.NO; }
+				if(movDirection==Direction.RIGHT) { movDirection = Direction.NO; }
 			}
 			state = PlayerState.JUMP;
+			setAnimation(wallJump);
 		}
 	}
 
@@ -229,6 +247,8 @@ public class Player {
 	public void stopRight() {
 		if(movDirection==Direction.RIGHT) { movDirection=Direction.NO; }
 	}
+	
+	public void setAnimation(Animation animation) { animation.reset(); currentAnimation=animation;}
 
 	public void paint(int offX, int offY, Graphics g, Arena arena){
 		/*g.setColor(Color.cyan);
@@ -236,20 +256,21 @@ public class Player {
 		g.setColor(Color.green);
 		feetBox.paint(offX, offY, g);*/
 		
-		g.drawImage(wait.getSprite(spriteDirection),offX+pos.x-wait.getXOffset(),offY-pos.y-wait.getYOffset(),null);
-		wait = wait.update();
+		g.drawImage(currentAnimation.getSprite(spriteDirection),offX+pos.x-currentAnimation.getXOffset(),offY-pos.y-currentAnimation.getYOffset(),null);
+		currentAnimation = currentAnimation.update();
 		
 		g.setColor(Color.white);
 		g.drawString("(state) "+state.name(), 10, 20);
 		g.drawString("(movDir) "+movDirection.name(), 10, 40);
 		g.drawString("(spritDir) "+spriteDirection.name(), 10, 60);
+		g.drawString("(animation) "+currentAnimation.animationName, 10, 80);
 
-		g.drawString("hitBox", 10, 100);
-		g.drawString("x: "+arena.collidesX(hitBox), 10, 120);
-		g.drawString("y: "+arena.collidesY(hitBox), 10, 140);
+		g.drawString("hitBox", 10, 120);
+		g.drawString("x: "+arena.collidesX(hitBox), 10, 140);
+		g.drawString("y: "+arena.collidesY(hitBox), 10, 160);
 
-		g.drawString("hitBox", 10, 160);
-		g.drawString("x: "+arena.collidesX(feetBox), 10, 180);
-		g.drawString("y: "+arena.collidesY(feetBox), 10, 200);
+		g.drawString("hitBox", 10, 180);
+		g.drawString("x: "+arena.collidesX(feetBox), 10, 200);
+		g.drawString("y: "+arena.collidesY(feetBox), 10, 220);
 	}
 }
