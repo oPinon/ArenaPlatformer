@@ -26,6 +26,8 @@ public class test extends JPanel implements ActionListener{
 	private Arena arena;
 	private Camera camera;
 	private Timer timer;
+	private int fps = 60;
+	private long time;
 	
 	public test(int width, int height) {
 		
@@ -45,8 +47,9 @@ public class test extends JPanel implements ActionListener{
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		
-		timer = new Timer(16,this);
+		timer = new Timer(1000/fps,this);
 		timer.start();
+		time = System.currentTimeMillis();
 	}
 
 	public void paint(Graphics g) {
@@ -54,7 +57,7 @@ public class test extends JPanel implements ActionListener{
 		g.setColor(Color.lightGray);
 		g.fillRect(0, 0, width, height);
 		
-		g.setColor(Color.black);
+		g.setColor(Color.darkGray);
 		arena.paint(camera.getXOffset(),camera.getYOffset(),g);
 		
 		g.setColor(Color.green);
@@ -63,6 +66,9 @@ public class test extends JPanel implements ActionListener{
 		g.setColor(Color.darkGray);
 		//g.drawString("x:"+arena.collidesX(player.feetBox).name(), width/2-13, height/2);
 		//g.drawString("y:"+arena.collidesY(player.feetBox).name(), width/2-13, height/2+10);
+		
+		g.setColor(Color.white);
+		g.drawString("fps : "+fps, width-60, 20);
 		
 		Toolkit.getDefaultToolkit().sync();
         g.dispose();
@@ -73,6 +79,12 @@ public class test extends JPanel implements ActionListener{
 		if(player.pos.y<-500) { reset(); }
 		player.update(arena);
 		camera.update();
+		updateFPS();
+	}
+	
+	private void updateFPS() {
+		fps = (int) (0.9*fps + 0.1*1000/Math.max((System.currentTimeMillis()-time),1));
+		time = System.currentTimeMillis();
 	}
 	
 	private class Controller implements KeyListener {

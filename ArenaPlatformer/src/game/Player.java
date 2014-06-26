@@ -18,8 +18,8 @@ public class Player {
 	private Direction movDirection, spriteDirection;
 	private double dx, dy;
 	private double gravity = -1;
-	private double jumpForce = 20, runSpeed = 15, airControl = 0.05, wallJumpXForce = 10, wallJumpYForce = jumpForce;
-	private int groundStartInertia = 10, groundStopInertia = 40;
+	private double jumpForce = 20, runSpeed = 10, airControl = 0.05, wallJumpXForce = 10, wallJumpYForce = jumpForce;
+	private int groundStartInertia = 20, groundStopInertia = 30;
 	private int animationFramePerFrame = 2;
 	
 	private Animation currentAnimation, brake, fall, fallStart, jump, jumpStart, punch, run, startRun, wait, wall, wallJump, wallStart;

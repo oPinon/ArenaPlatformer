@@ -70,6 +70,6 @@ public class Animation {
 	}
 
 	private BufferedImage loadSprite(int frame, String direction) throws IOException {
-		return ImageIO.read(new File("sprites/"+character+"/"+animationName+"/"+direction+"/"+frame+".png"));
+		return ImageIO.read(new File("sprites/"+character+"/"+animationName+"/"+direction+"/"+Integer.toString(frame)+".png"));
 	}
 }
