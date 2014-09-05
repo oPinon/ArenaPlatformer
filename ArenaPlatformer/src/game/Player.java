@@ -20,7 +20,7 @@ public class Player {
 	private double gravity = -1;
 	private double jumpForce = 20, runSpeed = 10, airControl = 0.05, wallJumpXForce = 10, wallJumpYForce = jumpForce;
 	private int groundStartInertia = 20, groundStopInertia = 30;
-	private int animationFramePerFrame = 2;
+	private int animationFramePerFrame = 1;
 	
 	private Animation currentAnimation, brake, fall, fallStart, jump, jumpStart, punch, run, startRun, wait, wall, wallJump, wallStart;
 	
@@ -35,18 +35,18 @@ public class Player {
 		this.spriteDirection = Direction.RIGHT;
 		this.dx = 0; this.dx = 0;
 		
-		wait = new Animation("testChar","wait",null,animationFramePerFrame);
-		brake = new Animation("testChar","brake",wait,animationFramePerFrame);
-		fall = new Animation("testChar","fall",null,animationFramePerFrame);
-		fallStart = new Animation("testChar","fallStart",fall,animationFramePerFrame);
-		jump = new Animation("testChar","jump",null,animationFramePerFrame);
-		jumpStart = new Animation("testChar","jumpStart",jump,animationFramePerFrame);
-		//punch = new Animation("testChar","punch",wait,animationFramePerFrame);
-		run = new Animation("testChar","run",null,animationFramePerFrame);
-		startRun = new Animation("testChar","startRun",run,animationFramePerFrame);
-		wall = new Animation("testChar","wall",null,animationFramePerFrame);
-		wallJump = new Animation("testChar","wallJump",jump,animationFramePerFrame);
-		wallStart = new Animation("testChar","wallStart",wall,animationFramePerFrame);
+		wait = new Animation("guyFall","wait",null,animationFramePerFrame);
+		brake = new Animation("guyFall","brake",wait,animationFramePerFrame);
+		fall = new Animation("guyFall","fall",null,animationFramePerFrame);
+		fallStart = new Animation("guyFall","fallStart",fall,animationFramePerFrame);
+		jump = new Animation("guyFall","jump",null,animationFramePerFrame);
+		jumpStart = new Animation("guyFall","jumpStart",jump,animationFramePerFrame);
+		//punch = new Animation("guyFall","punch",wait,animationFramePerFrame);
+		run = new Animation("guyFall","run",null,animationFramePerFrame);
+		startRun = new Animation("guyFall","startRun",run,animationFramePerFrame);
+		wall = new Animation("guyFall","wall",null,animationFramePerFrame);
+		wallJump = new Animation("guyFall","wallJump",jump,animationFramePerFrame);
+		wallStart = new Animation("guyFall","wallStart",wall,animationFramePerFrame);
 		
 		setAnimation(fall);
 	}
