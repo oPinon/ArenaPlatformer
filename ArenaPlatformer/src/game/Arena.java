@@ -1,8 +1,8 @@
 package game;
 
-import java.awt.Graphics;
 import java.util.ArrayList;
 
+import javafx.scene.canvas.GraphicsContext;
 import physics.Box;
 import physics.BoxCollision;
 
@@ -57,7 +57,7 @@ public class Arena {
 		return BoxCollision.OUT;
 	}
 	
-	public void paint(int offX, int offY, Graphics g) {
+	public void paint(int offX, int offY, GraphicsContext g) {
 		for(Box box : colMap) {
 			box.paint(offX,offY,g);
 		}

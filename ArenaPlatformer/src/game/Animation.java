@@ -1,20 +1,18 @@
 package game;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
+import javafx.scene.image.Image;
 
 public class Animation {
 
 	public String character, animationName;
 	private Animation nextAnimation;
 	private int frameDelay;
-	private ArrayList<BufferedImage> spritesLeft, spritesRight;
+	private ArrayList<Image> spritesLeft, spritesRight;
 	private int counter, currentFrame;
-	private int xOffset, yOffset;
+	private double xOffset, yOffset;
 
 	public Animation(String character, String animationName, Animation nextAnimation, int frameDelay) {
 		this.character = character;
@@ -22,11 +20,11 @@ public class Animation {
 		this.nextAnimation = nextAnimation;
 		this.frameDelay = frameDelay;
 
-		spritesLeft = new ArrayList<BufferedImage>();
-		spritesRight = new ArrayList<BufferedImage>();
+		spritesLeft = new ArrayList<Image>();
+		spritesRight = new ArrayList<Image>();
 		boolean loading = true;
 		for(int i=0; loading; i++) {
-			BufferedImage spriteLeft, spriteRight;
+			Image spriteLeft, spriteRight;
 			try {
 				spriteLeft = loadSprite(i,"left");
 				spriteRight = loadSprite(i,"right");
@@ -48,10 +46,10 @@ public class Animation {
 		this.nextAnimation = nextAnimation;
 	}
 
-	public int getXOffset() { return xOffset; }
-	public int getYOffset() { return yOffset; }
+	public double getXOffset() { return xOffset; }
+	public double getYOffset() { return yOffset; }
 
-	public BufferedImage getSprite(Direction direction) {
+	public Image getSprite(Direction direction) {
 		if(direction==Direction.RIGHT) { return spritesRight.get(currentFrame); }
 		else { return spritesLeft.get(currentFrame); }
 	}
@@ -69,7 +67,10 @@ public class Animation {
 		counter=0; currentFrame=0;
 	}
 
-	private BufferedImage loadSprite(int frame, String direction) throws IOException {
-		return ImageIO.read(new File("sprites/"+character+"/"+animationName+"/"+direction+"/"+Integer.toString(frame)+".png"));
+	private Image loadSprite(int frame, String direction) throws IOException {
+		//System.out.println("file:sprites/"+character+"/"+animationName+"/"+direction+"/"+Integer.toString(frame)+".png");
+		Image toReturn =  new Image("file:sprites/"+character+"/"+animationName+"/"+direction+"/"+Integer.toString(frame)+".png");
+		if(toReturn.isError()) { throw new IOException(); }
+		else return toReturn;
 	}
 }

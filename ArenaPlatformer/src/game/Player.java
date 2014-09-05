@@ -1,12 +1,7 @@
 package game;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 import physics.*;
 
@@ -250,27 +245,27 @@ public class Player {
 	
 	public void setAnimation(Animation animation) { animation.reset(); currentAnimation=animation;}
 
-	public void paint(int offX, int offY, Graphics g, Arena arena){
+	public void paint(int offX, int offY, GraphicsContext g, Arena arena){
 		/*g.setColor(Color.cyan);
 		hitBox.paint(offX, offY, g);
 		g.setColor(Color.green);
 		feetBox.paint(offX, offY, g);*/
 		
-		g.drawImage(currentAnimation.getSprite(spriteDirection),offX+pos.x-currentAnimation.getXOffset(),offY-pos.y-currentAnimation.getYOffset(),null);
+		g.drawImage(currentAnimation.getSprite(spriteDirection),offX+pos.x-currentAnimation.getXOffset(),offY-pos.y-currentAnimation.getYOffset());
 		currentAnimation = currentAnimation.update();
 		
-		g.setColor(Color.white);
-		g.drawString("(state) "+state.name(), 10, 20);
-		g.drawString("(movDir) "+movDirection.name(), 10, 40);
-		g.drawString("(spritDir) "+spriteDirection.name(), 10, 60);
-		g.drawString("(animation) "+currentAnimation.animationName, 10, 80);
+		g.setFill(Color.WHITE);
+		g.fillText("(state) "+state.name(), 10, 20);
+		g.fillText("(movDir) "+movDirection.name(), 10, 40);
+		g.fillText("(spritDir) "+spriteDirection.name(), 10, 60);
+		g.fillText("(animation) "+currentAnimation.animationName, 10, 80);
 
-		g.drawString("hitBox", 10, 120);
-		g.drawString("x: "+arena.collidesX(hitBox), 10, 140);
-		g.drawString("y: "+arena.collidesY(hitBox), 10, 160);
+		g.fillText("hitBox", 10, 120);
+		g.fillText("x: "+arena.collidesX(hitBox), 10, 140);
+		g.fillText("y: "+arena.collidesY(hitBox), 10, 160);
 
-		g.drawString("hitBox", 10, 180);
-		g.drawString("x: "+arena.collidesX(feetBox), 10, 200);
-		g.drawString("y: "+arena.collidesY(feetBox), 10, 220);
+		g.fillText("hitBox", 10, 180);
+		g.fillText("x: "+arena.collidesX(feetBox), 10, 200);
+		g.fillText("y: "+arena.collidesY(feetBox), 10, 220);
 	}
 }

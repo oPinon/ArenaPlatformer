@@ -1,13 +1,15 @@
 package physics;
 
+import javafx.beans.property.DoubleProperty;
+
 public class Camera {
 
 	static double inertia = 10;
 	
 	public Position target, pos;
-	private int width, height;
+	private DoubleProperty width, height;
 	
-	public Camera(Position center, int width, int height) {
+	public Camera(Position center, DoubleProperty width,  DoubleProperty height) {
 		this.target = center;
 		this.pos = new Position(center);
 		this.width = width;
@@ -15,11 +17,11 @@ public class Camera {
 	}
 	
 	public int getXOffset() {
-		return width/2 - pos.x;
+		return (int) width.get()/2 - pos.x;
 	}
 	
 	public int getYOffset(){
-		return height/2 + pos.y;
+		return (int) height.get()/2 + pos.y;
 	}
 	
 	public void update(){

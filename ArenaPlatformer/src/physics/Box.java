@@ -1,6 +1,6 @@
 package physics;
 
-import java.awt.Graphics;
+import javafx.scene.canvas.GraphicsContext;
 
 public class Box {
 
@@ -51,7 +51,7 @@ public class Box {
 		else { return BoxCollision.OUT; }
 	}
 	
-	public void paint(int offX, int offY, Graphics g) {
+	public void paint(int offX, int offY, GraphicsContext g) {
 		g.fillRect(offX+(int)+xMin, offY-(int)yMax, (int)(xMax-xMin), (int)(yMax-yMin));
 	}
 }
