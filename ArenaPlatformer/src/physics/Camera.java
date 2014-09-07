@@ -24,11 +24,13 @@ public class Camera {
 		return (int) height.get()/2 + pos.y;
 	}
 	
-	public void update(){
+	public void update(Box bounds){
 		double dx = target.x - pos.x;
 		double dy = target.y - pos.y;
 
 		pos.x += dx/inertia;
 		pos.y += dy/inertia;
+		
+		Box.keepInBounds(pos, bounds);
 	}
 }

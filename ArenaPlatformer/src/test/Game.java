@@ -24,6 +24,10 @@ public class Game extends Application {
 	private int fps = 60;
 	private long time;
 	private Canvas canvas;
+	private boolean isFullscreen;
+	private boolean isPaused;
+	private GameLoop gameLoop;
+	private Stage stage;
 
     @Override
     public void start(final Stage primaryStage) {
@@ -31,27 +35,32 @@ public class Game extends Application {
         Group root = new Group();
         Scene scene = new Scene(root, 600, 400);
         
-        canvas = new Canvas();
-        canvas.widthProperty().bind(scene.widthProperty());
-        canvas.heightProperty().bind(scene.heightProperty());
+        this.stage = primaryStage;
         
-    	arena = new Arena();
-		player = new Player();
-		camera = new Camera(player.pos,canvas.widthProperty(),canvas.heightProperty());
+        this.canvas = new Canvas();
+        this.canvas.widthProperty().bind(scene.widthProperty());
+        this.canvas.heightProperty().bind(scene.heightProperty());
+        
+        this.arena = new Arena();
+        this.player = new Player();
+        this.camera = new Camera(player.pos,canvas.widthProperty(),canvas.heightProperty());
 		
-		root.getChildren().add(canvas);
+		root.getChildren().add(this.canvas);
         
         primaryStage.setTitle("ArenaPlatformer");
         primaryStage.setScene(scene);
         primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
         primaryStage.setFullScreen(true);
+        this.isFullscreen = true;
         primaryStage.show();
         scene.setCursor(Cursor.NONE);
         
-        scene.setOnKeyPressed(new ControlsPressed(player));
+        scene.setOnKeyPressed(new ControlsPressed(player,this));
         scene.setOnKeyReleased(new ControlsReleased(player));
         
-        new GameLoop(this).start();
+        this.gameLoop = new GameLoop(this);
+        this.gameLoop.start();
+        this.isPaused = false;
     }
     
     public void repaint() {
@@ -61,14 +70,14 @@ public class Game extends Application {
     	
 		if(player.pos.y<-500) { reset(); }
 		player.update(arena);
-		camera.update();
+		camera.update(arena.bounds);
 		updateFPS();
     	
-    	g.setFill(Color.LIGHTGRAY);
+    	g.setFill(Color.GREEN);
 		g.fillRect(0, 0, width, height);
 		
 		g.setFill(Color.DARKGRAY);
-		arena.paint(camera.getXOffset(),camera.getYOffset(),g);
+		arena.paint(camera.getXOffset(),camera.getYOffset(), width, height ,g);
 		
 		g.setFill(Color.GREEN);
 		player.paint(camera.getXOffset(),camera.getYOffset(), g, arena);
@@ -83,12 +92,19 @@ public class Game extends Application {
 		//Toolkit.getDefaultToolkit().sync();
     }
     
+    public void switchFullscreen() { this.isFullscreen = !this.isFullscreen; this.stage.setFullScreen(this.isFullscreen); }
+    public void startPause() {
+    	if(this.isPaused) { this.gameLoop.stop(); }
+    	else { this.gameLoop.start(); }
+    	this.isPaused = !this.isPaused;
+    }
+    
 	private void updateFPS() {
 		fps = (int) (0.9*fps + 0.1*1000/Math.max((System.currentTimeMillis()-time),1));
 		time = System.currentTimeMillis();
 	}
 	
-	private void reset() { player = new Player(); camera.target = player.pos; }
+	public void reset() { this.player.pos.x = 0; this.player.pos.y = 200; }
 
     public static void main(String[] args) {
         launch(args);
@@ -98,9 +114,11 @@ public class Game extends Application {
 class ControlsPressed implements EventHandler<KeyEvent>{
 
 	private Player player;
+	private Game game;
 	
-	public ControlsPressed(Player player) {
+	public ControlsPressed(Player player, Game game) {
 		this.player = player;
+		this.game = game;
 	}
 	
 	@Override
@@ -108,6 +126,10 @@ class ControlsPressed implements EventHandler<KeyEvent>{
 		if(e.getCode()==KeyCode.LEFT) { player.goLeft(); }
 		else if(e.getCode()==KeyCode.RIGHT) { player.goRight(); }
 		else if(e.getCode()==KeyCode.SPACE) { player.jump(); }
+		else if(e.getCode()==KeyCode.F) { game.switchFullscreen(); }
+		else if(e.getCode()==KeyCode.CONTROL) { game.startPause(); }
+		else if(e.getCode()==KeyCode.DELETE) { game.reset(); }
+		else if(e.getCode()==KeyCode.ESCAPE) { System.exit(0); }
 	}	
 }
 

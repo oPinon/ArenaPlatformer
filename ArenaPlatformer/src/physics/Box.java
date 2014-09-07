@@ -54,4 +54,11 @@ public class Box {
 	public void paint(int offX, int offY, GraphicsContext g) {
 		g.fillRect(offX+(int)+xMin, offY-(int)yMax, (int)(xMax-xMin), (int)(yMax-yMin));
 	}
+	
+	static void keepInBounds(Position p, Box bounds) {
+		if(p.x<bounds.xMin) { p.x = (int) bounds.xMin; }
+		else if(p.x>bounds.xMax) { p.x = (int) bounds.xMax; }
+		if(p.y<bounds.yMin) { p.y = (int) bounds.yMin; }
+		else if(p.y>bounds.yMax) { p.y = (int) bounds.yMax; }
+	}
 }
