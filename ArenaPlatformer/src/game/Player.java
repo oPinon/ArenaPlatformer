@@ -11,13 +11,15 @@ public class Player {
 	public HitBox hitBox, feetBox;
 	private PlayerState state;
 	private Direction movDirection, spriteDirection;
-	private double dx, dy;
+	private double dx, dy; // sprite speed
 	private double gravity = -1;
 	private double jumpForce = 20, runSpeed = 10, airControl = 0.05, wallJumpXForce = 10, wallJumpYForce = jumpForce;
 	private int groundStartInertia = 20, groundStopInertia = 30;
+	private double koAirDamp = 0.99;
+	private double koMinSpeed = 10, koContactDamp = 0.9;
 	private int animationFramePerFrame = 1;
 	
-	private Animation currentAnimation, brake, fall, fallStart, jump, jumpStart, punch, run, startRun, wait, wall, wallJump, wallStart;
+	private Animation currentAnimation, brake, fall, fallStart, jump, jumpStart, punch, run, startRun, wait, wall, wallJump, wallStart, ko;
 	
 	static int maxSpeed = Arena.e;
 
@@ -94,11 +96,24 @@ public class Player {
 			moveXAir(); moveYAir();
 			break;
 		}
+		case KO : {
+			dy += gravity;
+			dx *= koAirDamp; dy *= koAirDamp;
+			tryBounce(arena);
+			moveXAir(); moveYAir();
+			break;
+		}
 		case PUNCH : {
 
 			break;
 		}
 		}
+	}
+	
+	public void knock( double dx, double dy) {
+		this.state = PlayerState.KO;
+		this.dx = dx;
+		this.dy = dy;
 	}
 
 	private boolean tryLanding(Arena arena) {
@@ -125,6 +140,17 @@ public class Player {
 			return true;
 		}
 		else { return  false; }
+	}
+	
+	private boolean tryBounce(Arena arena) {
+		BoxCollision colY = arena.collidesY(feetBox);
+		BoxCollision colX = arena.collidesX(hitBox);
+		if(colY==BoxCollision.BELOW) { dy = Math.abs(dy)/2; dx*=koContactDamp; }
+		else if(colY==BoxCollision.ABOVE) { dy = -Math.abs(dy)*koContactDamp;}
+		if(colX==BoxCollision.RIGHT) { dx = Math.abs(dx)*koContactDamp; }
+		else if(colX==BoxCollision.LEFT) { dx = -Math.abs(dx)*koContactDamp; }
+		if(dx*dx+dy*dy<koMinSpeed*koMinSpeed) { state = PlayerState.FALL; }
+		return false;
 	}
 	
 	private boolean tryFalling(Arena arena) {

@@ -2,5 +2,5 @@ package game;
 
 public enum PlayerState {
 	
-	WAIT, RUN, JUMP, ONWALL, FALL, PUNCH;
+	WAIT, RUN, JUMP, ONWALL, FALL, PUNCH, KO;
 }

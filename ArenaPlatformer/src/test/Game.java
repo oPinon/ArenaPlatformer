@@ -130,6 +130,7 @@ class ControlsPressed implements EventHandler<KeyEvent>{
 		else if(e.getCode()==KeyCode.CONTROL) { game.startPause(); }
 		else if(e.getCode()==KeyCode.DELETE) { game.reset(); }
 		else if(e.getCode()==KeyCode.ESCAPE) { System.exit(0); }
+		else if(e.getCode()==KeyCode.K) { player.knock(100,20); }
 	}	
 }
 
